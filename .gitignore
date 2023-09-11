@@ -1,3 +1,8 @@
+# Ignore .env files
 .env
+
+# Ignore Pipfile
 Pipfile
+
+# Ignore package-json.lock
 package-lock.json
