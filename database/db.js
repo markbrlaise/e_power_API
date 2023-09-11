@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 
 // connecting to db
 const database = mongoose.connect(
-    process.env.DB_URL,
+    'mongodb://127.0.0.1:27017/test-db',
+    //process.env.DB_URL,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
