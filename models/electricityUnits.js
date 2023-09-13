@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const electricityUnitSchema = mongoose.Schema(
     {
-        sellerId: {
+        userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             unique: true,

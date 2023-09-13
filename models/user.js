@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
             required: true,
             trim: true,
             lowercase: true,
+            unique: true,
         },
         password: {
             type: String,
@@ -18,7 +19,8 @@ const userSchema = new mongoose.Schema(
         },
         account_number: {
             type: String,
-            match: /^[0-9]{14}$/,
+            match: /^[0-9]{20}$/,
+            unique: true,
             required: true
         },
         mobile_number: {
