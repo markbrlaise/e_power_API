@@ -28,19 +28,24 @@ const userSchema = new mongoose.Schema(
             match: /^[0-9]{10}$/,
             required: true,
         },
+        role: {
+            type: String,
+            required: true,
+            default: 'user',
+        }
     },
     { timestamps: true } // to include createdAt and updatedAt
 );
 const User = mongoose.model("User", userSchema);
 
-const adminSchema = new mongoose.Schema({
-    adminRole: {
-        type: String,
-        required: true,
-        default: 'admin',
-    },
-});
+// const adminSchema = new mongoose.Schema({
+//     adminRole: {
+//         type: String,
+//         required: true,
+//         default: 'admin',
+//     },
+// });
 
-const Admin = User.discriminator('Admin', adminSchema);
+// const Admin = User.discriminator('Admin', adminSchema);
 
-module.exports = { User, Admin }
+module.exports = { User }//, Admin }

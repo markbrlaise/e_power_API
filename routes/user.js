@@ -12,8 +12,11 @@ router.post("/login", userController.login);
 // updateUser
 router.patch("/:userId", verifyUser, userController.updateUser);
 
+// send reset password link
+router.post('/reset-password', verifyUser, userController.resetPasswordLink);
+
 // reset password
-router.post('/reset-password', resetPassword);
+router.post('/:userId/:token', userController.resetPassword);
 
 // deleteUser
 router.delete("/:userId", verifyUser, userController.deleteUser);

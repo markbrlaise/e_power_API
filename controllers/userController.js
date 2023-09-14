@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const Token = require('../models/token');
+const sendEmail = require('../middleware/sendEmail');
 const crypto = require('crypto');
 const { registerValidation, loginValidation } = require('../middleware/validation');
 
@@ -25,8 +27,9 @@ async function signUp(req, res) {
         password: hashedPassword,
         account_number,
         mobile_number,
+        role: 'user',
       });
-  
+
       await user.save();
   
       return res.status(201).json({ message: "User registered successfully", user });
@@ -66,24 +69,6 @@ async function login(req, res) {
     }
 }
 
-async function resetPassword(req, res) {
-    try {
-        const { email } = req.body;
-
-        // find user by email
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(404).json({ message: "User with this email not found" });
-        }
-
-        // generate a temp reset token
-
-        // send update link to user...
-    } catch (error) {
-        
-    }
-}
 
 async function updateUser(req, res) {
     try {
@@ -122,8 +107,51 @@ async function updateUser(req, res) {
     }  
   }
   
-  async function resetPassword(req, res) {
+  async function resetPasswordLink(req, res) {
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) return res.status(400).send("User with this email not found");
 
+        let token = await Token.findOne({ userId: user._id });
+        if (!token) {
+            token = await new Token({
+                userId: user._id,
+                token: crypto.randomBytes(32).toString('hex'),
+            }).save();
+        }
+
+        const link = `${process.env.BASE_URL}/password-reset/${user._id}/${token.token}`;
+        await sendEmail(user.email, "Password reset", link);
+
+        res.status(201).send('password reset link sent to your email');
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async function resetPassword(req, res) {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) return res.status(404).json({ messsage: "User not found" });
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.params.token,
+        });
+
+        if (!token) return res.status(400).json({ message: "Invalid link or it expired" });
+
+        const hashedPassword = crypto.createHash('sha256').update(req.params.password).digest('hex');
+        user.password = hashedPassword;
+        await user.save();
+        await token.delete();
+
+        res.status(201).json({ message: "Password reset successful." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
   }
 
   async function userDetails(req, res) {
@@ -155,6 +183,7 @@ async function updateUser(req, res) {
 module.exports = {
     signUp,
     login,
+    resetPasswordLink,
     resetPassword,
     updateUser,
     deleteUser,
