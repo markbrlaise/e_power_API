@@ -16,8 +16,10 @@ const mobileWalletRoute = require('./routes/mobileWallet.js');
 const electricityUnitsRoute = require('./routes/electricityUnits.js');
 
 // Middleware to parse incoming requests
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 app.use(cors());
 
 // Routes to be handled

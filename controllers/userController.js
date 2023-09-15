@@ -107,6 +107,14 @@ async function updateUser(req, res) {
         res.status(500).json({ message: "Internal server error" });
     }  
   }
+
+  async function assignRole(req, res) {
+    try {
+        
+    } catch (error) {
+        
+    }
+  }
   
   async function resetPasswordLink(req, res) {
     try {
@@ -186,6 +194,7 @@ module.exports = {
     login,
     resetPasswordLink,
     resetPassword,
+    assignRole,
     updateUser,
     deleteUser,
     userDetails,

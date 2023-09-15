@@ -21,7 +21,7 @@ router.post('/reset-password', verifyUser, userController.resetPasswordLink);
 router.post('/:userId/:token', userController.resetPassword);
 
 // assign role
-
+router.post('change-rights', userController.assignRole);
 
 // deleteUser
 router.delete("/:userId", verifyUser, userController.deleteUser);
