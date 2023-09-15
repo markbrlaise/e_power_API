@@ -1,5 +1,7 @@
 // mongoose ODM
 const mongoose = require('mongoose');
+// import mongoose from 'mongoose';
+// const mongoose = new Mongoose()
 
 // connecting to db
 const database = mongoose.connect(
@@ -19,3 +21,5 @@ const database = mongoose.connect(
         }
     }
 );
+
+module.exports = database

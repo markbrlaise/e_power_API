@@ -63,4 +63,6 @@ router.get("/transactions/:id", transactionController.getTransactionsByUser);
 // Get a transaction
 router.get("/transactions/:id/:transactionId", transactionController.getTransaction);
 
-module.exports = router;
+const transactionRoute = router;
+
+module.exports = transactionRoute;

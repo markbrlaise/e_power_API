@@ -9,3 +9,5 @@ Pipfile
 
 # Ignore package-json.lock
 package-lock.json
+
+keys.js

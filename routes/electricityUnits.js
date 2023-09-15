@@ -1,4 +1,4 @@
-import { Router } from "express";
+const { Router } = require("express");
 const elecController = require("../controllers/electricityUnitsController");
 const { verifyUser, verifyAdmin } = require("../middleware/verifyToken"); 
 
@@ -12,4 +12,6 @@ router.get("/check", elecController.checkAvailableUnits);
 router.post("/send", elecController.sendUnits);
 // more endpoints for implementing other features
 
-module.exports = router;
+const electricityUnitsRoute = router;
+
+module.exports = electricityUnitsRoute;

@@ -4,6 +4,7 @@ const Token = require('../models/token');
 const sendEmail = require('../middleware/sendEmail');
 const crypto = require('crypto');
 const { registerValidation, loginValidation } = require('../middleware/validation');
+require('dotenv').config();
 
 async function signUp(req, res) {
     try {
@@ -58,7 +59,7 @@ async function login(req, res) {
         const token = jwt.sign(
             { userId: user._id },
             process.env.SECRET_KEY,
-            { expiresIn: '2h', }
+            { expiresIn: process.env.EXPIRES_IN, }
         );
 
         res.status(200).json({ message: 'Login successful', token });

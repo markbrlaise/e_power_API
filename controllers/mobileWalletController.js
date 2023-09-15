@@ -1,4 +1,4 @@
-const MobileWallet = require("../models/mobileWalletModel");
+const MobileWallet = require("../models/mobileWallet");
 
 // Controller function to create a new mobile wallet
 async function createMobileWallet(req, res) {

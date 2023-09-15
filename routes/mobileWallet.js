@@ -24,4 +24,6 @@ router.post("/transfer", mobileWalletController.transferFunds);
 
 // Add more endpoints as needed for your project
 
-module.exports = router;
+const mobileWalletRoute = router;
+
+module.exports = mobileWalletRoute;
