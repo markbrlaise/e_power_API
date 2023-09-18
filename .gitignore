@@ -11,3 +11,4 @@ Pipfile
 package-lock.json
 
 keys.js
+logger.js

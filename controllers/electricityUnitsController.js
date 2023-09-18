@@ -4,7 +4,7 @@ const transactionController = require("../controllers/transactionController");
 // controller function to check available units
 async function checkAvailableUnits(req, res) {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
 
         // checking if account exists
         let user = await ElectricityUnits.findOne({ userId });

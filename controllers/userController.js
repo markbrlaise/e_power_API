@@ -1,9 +1,13 @@
+require('../database/db');
 const User = require('../models/user');
+const ElecUnits = require('../models/electricityUnits');
+const Wallet = require('../models/mobileWallet');
 const jwt = require('jsonwebtoken');
 const Token = require('../models/token');
 const sendEmail = require('../middleware/sendEmail');
 const crypto = require('crypto');
 const { registerValidation, loginValidation } = require('../middleware/validation');
+// const { json } = require('body-parser');
 require('dotenv').config();
 
 async function signUp(req, res) {
@@ -19,21 +23,43 @@ async function signUp(req, res) {
         return res.status(400).json({ message: "User already exists" });
       }
 
-      const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+    //   const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
       // Create a new user
-      const user = new User({
-        username,
-        email,
-        password: hashedPassword,
-        account_number,
-        mobile_number,
-        role: 'user',
-      });
+      try {
+          const user = new User({
+            username,
+            email,
+            password,
+            account_number,
+            mobile_number,
+            role: 'user',
+          });
 
-      await user.save();
-  
-      return res.status(201).json({ message: "User registered successfully", user });
+          await user.save();
+
+        //   const newUser = {
+        //     _id: user._id,
+        //     username: user.username,
+        //     account_number: user.account_number,
+        //   };
+
+        const units = new ElecUnits({
+            userId : user._id
+        });
+
+        const wallet = new Wallet({
+            userId: user._id
+        });
+
+        await units.save();
+        await wallet.save();
+      
+        return res.status(201).json({ message: "User registered successfully", user });
+        } catch (error) {
+        //   console.log(error)
+          res.status(400).json({ message: "User cannot be registered" });
+        }
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
@@ -45,15 +71,20 @@ async function login(req, res) {
         const { email, password } = req.body;
 
         // find user by email
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select('+password');
         if (!user) {
             return res.status(404).json({ message: "User with this email not found" });
         }
 
+        // console.log(json(user));
+
         const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
+        // console.log(user.password);
+        // console.log(hashedPassword);
+
         if (user.password !== hashedPassword) {
-            return res.status.json({ message: 'Invalid credentials' });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const token = jwt.sign(
@@ -62,6 +93,8 @@ async function login(req, res) {
             { expiresIn: process.env.EXPIRES_IN, }
         );
 
+        // set the token as a cookie
+        res.cookie('token', token, { httpOnly: true });
         res.status(200).json({ message: 'Login successful', token });
 
     } catch (error) {
@@ -108,11 +141,19 @@ async function updateUser(req, res) {
     }  
   }
 
-  async function assignRole(req, res) {
+  async function makeAdmin(req, res) {
     try {
-        
+        const { userId } = req.params;
+        newAdmin = await User.findById(userId);
+
+        if (!newAdmin) return res.status(404).json({ message: "User not found" });
+        if (newAdmin.role !== 'admin') {
+            newAdmin.role = 'admin';
+            return res.status(200).json({ message: `${newAdmin.username} now an admin` });
+        } else return res.status(201).json({ message: `${newAdmin.username} already an admin` });
     } catch (error) {
-        
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
     }
   }
   
@@ -141,7 +182,7 @@ async function updateUser(req, res) {
 
   async function resetPassword(req, res) {
     try {
-        const user = await User.findById(req.params.userId);
+        const user = await User.findById(req.params.userId).select('+password');
         if (!user) return res.status(404).json({ messsage: "User not found" });
 
         const token = await Token.findOne({
@@ -175,6 +216,7 @@ async function updateUser(req, res) {
         }
 
         const userDetails = {
+            _id: user._id,
             username: user.username,
             email: user.email,
             account_number: user.account_number,
@@ -194,7 +236,7 @@ module.exports = {
     login,
     resetPasswordLink,
     resetPassword,
-    assignRole,
+    makeAdmin,
     updateUser,
     deleteUser,
     userDetails,

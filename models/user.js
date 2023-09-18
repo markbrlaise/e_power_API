@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const userSchema = new mongoose.Schema(
     {
         // _id: mongoose.Schema.Types.ObjectId,
@@ -16,8 +17,9 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
+            select: false,
         },
-        account_number: {
+        _account_number: {
             type: String,
             match: /^[0-9]{20}$/,
             unique: true,
@@ -28,14 +30,45 @@ const userSchema = new mongoose.Schema(
             match: /^[0-9]{10}$/,
             required: true,
         },
-        role: {
+        _role: {
             type: String,
             // required: true,
             default: 'user',
+            select: false,
         }
     },
     { timestamps: true } // to include createdAt and updatedAt
 );
+
+// defining virtual getters
+userSchema.virtual('role')
+    .get(function () {
+        return this._role;
+    })
+    .set(function (newRole) {
+        if (this._role === 'admin') {
+            this._role = newRole
+        }
+    });
+
+userSchema.virtual('account_number').get(function () {
+    return this._account_number;
+});
+
+userSchema.pre('save', function (next) {
+    if (this.isModified('_role') || this.isModified('_account_number')) {
+        return next(new Error('Cannot modify role and account_number directly'));
+    }
+    next();
+});
+
+userSchema.pre('save', function(next) {
+    if (!this.isModified('password')) return next();
+
+    this.password = crypto.createHash('sha256').update(this.password).digest('hex');
+    next();
+});
+
 const User = mongoose.model("User", userSchema);
 
 // const adminSchema = new mongoose.Schema({
@@ -48,4 +81,4 @@ const User = mongoose.model("User", userSchema);
 
 // const Admin = User.discriminator('Admin', adminSchema);
 
-module.exports = { User }//, Admin }
+module.exports = User; //, Admin }

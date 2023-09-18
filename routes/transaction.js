@@ -55,13 +55,13 @@ router.post("/buy", async (req, res) => {
 });
 
 // Get all transactions (requires admin access)
-router.get("/transactions", verifyAdmin, transactionController.getAllTransactions);
+router.get("/", verifyAdmin, transactionController.getAllTransactions);
 
 // Get all transactions for a user
-router.get("/transactions/:id", transactionController.getTransactionsByUser);
+router.get("/:id", transactionController.getTransactionsByUser);
 
 // Get a transaction
-router.get("/transactions/:id/:transactionId", transactionController.getTransaction);
+router.get("/:id/:transactionId", transactionController.getTransaction);
 
 const transactionRoute = router;
 
