@@ -1,6 +1,7 @@
 {
     "version": 2,
     "name": "e_power_api",
+    "buildCommand": "next build",
     "builds": [
         {
             "src": "app.js",
