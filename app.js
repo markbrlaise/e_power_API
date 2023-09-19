@@ -16,6 +16,13 @@ require('dotenv').config();
 
 const app = express();
 
+const http = require('http');
+
+const server = http.createServer(function (req, res) {
+    res.write("Success");
+    res.end();
+});
+
 const userRoute = require('./routes/user');
 const transactionRoute = require('./routes/transaction.js');
 const mobileWalletRoute = require('./routes/mobileWallet.js');
@@ -49,7 +56,7 @@ app.use('/api/electricity-units', electricityUnitsRoute);
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server running on ${process.env.BASE_URL}:${port}`);
     return res.status(200).json({ message: "It works" });
 });
