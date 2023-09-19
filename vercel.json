@@ -1,8 +1,11 @@
 {
     "version": 2,
-    "installCommand": "npm install",
-    "buildCommand": "npm start",
-    
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/node"
+        }
+    ],
     "routes": [
         {
             "src": "/(.*)",
