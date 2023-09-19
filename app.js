@@ -7,6 +7,11 @@ const cors = require('cors');
 // import database from './database/db.js'; // Import your database setup
 const database = require('./database/db.js');
 const cookieParser = require('cookie-parser');
+
+const yaml = require('js-yaml');
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+
 require('dotenv').config();
 
 const app = express();
