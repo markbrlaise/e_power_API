@@ -44,10 +44,10 @@ app.use('/api/electricity-units', electricityUnitsRoute);
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log(`Server running on ${process.env.BASE_URL}:${port}`);
-});
+// app.listen(port, () => {
+//     console.log(`Server running on ${process.env.BASE_URL}:${port}`);
+// });
 
-export default function app(req, res) {
-    return res.status(200).json({ message: "It works" });
-}
+// export default function app(req, res) {
+//     return res.status(200).json({ message: "It works" });
+// }
