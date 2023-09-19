@@ -58,7 +58,7 @@ const port = process.env.PORT || 3000;
 
 server.listen(port, () => {
     console.log(`Server running on ${process.env.BASE_URL}:${port}`);
-    return res.status(200).json({ message: "It works" });
+    // return res.status(200).json({ message: "It works" });
 });
 
 // export default function app(req, res) {
