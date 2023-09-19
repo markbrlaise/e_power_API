@@ -8,7 +8,7 @@ node_modules
 Pipfile
 
 # Ignore package-json.lock
-package-lock.json
+# package-lock.json
 
 keys.js
 logger.js
