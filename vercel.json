@@ -1,8 +1,9 @@
 {
     "version": 2,
+    "installCommand": "next build",
     "builds": [
         {
-            "src": "package.json",
+            "src": "app.js",
             "use": "@vercel/node"
         }
     ],
