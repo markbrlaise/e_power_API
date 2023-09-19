@@ -51,3 +51,4 @@ const port = process.env.PORT || 3000;
 // export default function app(req, res) {
 //     return res.status(200).json({ message: "It works" });
 // }
+module.exports = app;
