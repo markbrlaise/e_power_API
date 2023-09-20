@@ -8,9 +8,9 @@ const cors = require('cors');
 const database = require('./database/db.js');
 const cookieParser = require('cookie-parser');
 
-const yaml = require('js-yaml');
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
+// const yaml = require('js-yaml');
+// const jsdom = require('jsdom');
+// const { JSDOM } = jsdom;
 
 require('dotenv').config();
 
