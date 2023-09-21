@@ -10,61 +10,107 @@ const { registerValidation, loginValidation } = require('../middleware/validatio
 // const { json } = require('body-parser');
 require('dotenv').config();
 
-async function signUp(req, res) {
-    try {
 
-    //   const { error, value } = registerValidation(req.body);
-    //   if (error) return res.status(400).send(error.details[0].message);
-      const { username, email, password, account_number, mobile_number } = req.body;
+// async function signUp(req, res) {
+//     try {
+
+//     //   const { error, value } = registerValidation(req.body);
+//     //   if (error) return res.status(400).send(error.details[0].message);
+//       const { username, email, password, account_number, mobile_number } = req.body;
   
-      // check if user already exists
-      const user_1 = await User.findOne({ email });
-      if (user_1) {
-        return res.status(400).json({ message: "User already exists" });
+//       // check if user already exists
+//       const user_1 = await User.findOne({ email });
+//       if (user_1) {
+//         return res.status(400).json({ message: "User already exists" });
+//       }
+
+//     //   const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+//       // Create a new user
+//       try {
+//         console.log('trying to create a user');
+//           const user = new User({
+//             username,
+//             email,
+//             password,
+//             account_number,
+//             mobile_number,
+//           });
+
+//           await user.save();
+//           console.log("user created");
+
+//         //   const newUser = {
+//         //     _id: user._id,
+//         //     username: user.username,
+//         //     account_number: user.account_number,
+//         //   };
+
+//         const units = new ElecUnits({
+//             userId : user._id
+//         });
+
+//         const wallet = new Wallet({
+//             userId: user._id
+//         });
+
+//         // console.log(user);
+
+//         await units.save();
+//         await wallet.save();
+      
+//         return res.status(201).json({ message: "User registered successfully", user });
+//         } catch (error) {
+//         //   console.log(error)
+//           res.status(400).json({ message: error });
+//         }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Internal server error" });
+//     }
+//   }
+
+async function signUp(req, res) {
+  try {
+      const { username, email, password, account_number, mobile_number } = req.body;
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          return res.status(400).json({ message: "User already exists" });
       }
 
-    //   const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+      const user = new User({
+          username,
+          email,
+          password,
+          account_number,
+          mobile_number
+      });
 
-      // Create a new user
-      try {
-          const user = new User({
-            username,
-            email,
-            password,
-            account_number,
-            mobile_number,
-            role: 'user',
-          });
+      await user.save();
 
-          await user.save();
+      const units = new ElecUnits({
+          userId: user._id
+      });
 
-        //   const newUser = {
-        //     _id: user._id,
-        //     username: user.username,
-        //     account_number: user.account_number,
-        //   };
+      const wallet = new Wallet({
+          userId: user._id
+      });
 
-        const units = new ElecUnits({
-            userId : user._id
-        });
+      await units.save();
+      await wallet.save();
 
-        const wallet = new Wallet({
-            userId: user._id
-        });
+      const newUser = { ...user.toObject() };
+      delete newUser.password;
 
-        await units.save();
-        await wallet.save();
-      
-        return res.status(201).json({ message: "User registered successfully", user });
-        } catch (error) {
-        //   console.log(error)
-          res.status(400).json({ message: "User cannot be registered" });
-        }
-    } catch (error) {
+      return res.status(201).json({ message: "User registered successfully", newUser });
+  } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
-    }
   }
+}
+
 
 async function login(req, res) {
     try {

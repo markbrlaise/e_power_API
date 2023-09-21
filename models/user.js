@@ -19,11 +19,20 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false,
         },
-        _account_number: {
+        account_number: {
             type: String,
             match: /^[0-9]{20}$/,
             unique: true,
-            required: true
+            required: true,
+            immutable: true,
+            // making account_number read only after creation
+            // set: function(value) {
+            //     if (this.isNew) {
+            //         return value;
+            //     } else {
+            //         return this.account_number;
+            //     }
+            // }
         },
         mobile_number: {
             type: String,
@@ -51,13 +60,9 @@ userSchema.virtual('role')
         }
     });
 
-userSchema.virtual('account_number').get(function () {
-    return this._account_number;
-});
-
 userSchema.pre('save', function (next) {
-    if (this.isModified('_role') || this.isModified('_account_number')) {
-        return next(new Error('Cannot modify role and account_number directly'));
+    if (this.isModified('_role')) {
+        return next(new Error('Cannot modify role directly'));
     }
     next();
 });

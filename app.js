@@ -1,4 +1,5 @@
 const express = require('express');
+// const { Router } = require('express');
 // import express from "express";
 const bodyParser = require('body-parser');
 // import bodyParser from 'body-parser';
@@ -16,12 +17,14 @@ require('dotenv').config();
 
 const app = express();
 
-const http = require('http');
+// const router = Router();
 
-const server = http.createServer(function (req, res) {
-    res.write("Success");
-    res.end();
-});
+// const http = require('http');
+
+// const server = http.createServer(function (req, res) {
+//     res.write("Success");
+//     // res.end();
+// });
 
 const userRoute = require('./routes/user');
 const transactionRoute = require('./routes/transaction.js');
@@ -34,13 +37,17 @@ const electricityUnitsRoute = require('./routes/electricityUnits.js');
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(cors());
-app.use(cookieParser);
+app.use(cookieParser());
 
 // Routes to be handled
 app.use('/api/users', userRoute);
 app.use('/api/transactions', transactionRoute);
 app.use('/api/mobile-wallet', mobileWalletRoute);
 app.use('/api/electricity-units', electricityUnitsRoute);
+
+app.get('/', (req, res) => {
+    res.status(200).json({ message: "You are welcome" });
+});
 
 // Handle error requests
 // app.use((req, res, next) => {
@@ -56,7 +63,7 @@ app.use('/api/electricity-units', electricityUnitsRoute);
 
 const port = process.env.PORT || 3000;
 
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server running on ${process.env.BASE_URL}:${port}`);
     // return res.status(200).json({ message: "It works" });
 });
@@ -65,4 +72,4 @@ server.listen(port, () => {
 //     return res.status(200).json({ message: "It works" });
 // }
 
-module.exports = app;
+// module.exports = app;
