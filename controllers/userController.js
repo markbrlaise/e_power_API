@@ -72,12 +72,20 @@ require('dotenv').config();
 
 async function signUp(req, res) {
   try {
+      const { error, value } = registerValidation(req.body);
+      if (error) return res.status(400).json({ message: error.details[0].message });
+
       const { username, email, password, account_number, mobile_number } = req.body;
 
       // Check if user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
           return res.status(400).json({ message: "User already exists" });
+      }
+
+      const oldAccount = await User.findOne({ account_number });
+      if (oldAccount) {
+        return res.status(400).json({ message: "Account number used already" });
       }
 
       const user = new User({
@@ -114,6 +122,9 @@ async function signUp(req, res) {
 
 async function login(req, res) {
     try {
+        const { error, value } = loginValidation(req.body);
+        if (error) return res.status(400).json({ message: error.details[0].message });
+
         const { email, password } = req.body;
 
         // find user by email

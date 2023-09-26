@@ -1,4 +1,41 @@
 const MobileWallet = require("../models/mobileWallet");
+const User = require("../models/user");
+const axios = require('axios');
+
+
+async function transfer(sender, amount, reciepient, ref) {
+  try {
+    const flutterwaveEndpoint = 'https://api.flutterwave.com/v3/transfers';
+
+    const user = await User.findOne({ userId });
+
+    const transferPayLoad = {
+      account_bank: 'MPS',
+      account_number: sender.mobile_number,
+      amount: amount,
+      narration: 'Funds transfer',
+      currency: 'UGX',
+      reference: ref,
+      beneficiary_name: reciepient.name
+    };
+
+    const flutterwaveAPIKey = process.env.API_KEY;
+
+    const flutterwaveResponse = await axios.post(flutterwaveEndpoint, transferPayLoad, {
+      headers: {
+        Authorization: `Bearer ${flutterwaveAPIKey}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (flutterwaveResponse.status !== "success") {
+      throw new Error("Failed to initiate funds transfer");
+    }
+
+  } catch (error) {
+    throw error;
+  }
+}
 
 // Controller function to create a new mobile wallet
 async function createMobileWallet(req, res) {
@@ -54,11 +91,13 @@ async function depositFunds(req, res) {
           return res.status(404).json({ message: "Mobile wallet not found for this user" });
         }
     
-        // Use Bionic API to initiate a deposit transaction
-        // Replace 'YOUR_API_KEY' with your actual Bionic API key
+        // Use Beyonic API to initiate a deposit transaction
+        // Replace 'YOUR_API_KEY' with your actual Beyonic API key
         // Make an API request to deposit 'amount' into the user's wallet
         // Handle the API response
     
+        // await transfer(user, amount, uniWallet, ref);
+
         // Update the mobile wallet balance in your database
         wallet.balance += amount;
         await wallet.save();
@@ -88,10 +127,12 @@ async function withdrawFunds(req, res) {
           return res.status(400).json({ message: "Insufficient balance" });
         }
     
-        // Use Bionic API to initiate a withdrawal transaction
-        // Replace 'YOUR_API_KEY' with your actual Bionic API key
+        // Use Beyonic API to initiate a withdrawal transaction
+        // Replace 'YOUR_API_KEY' with your actual Beyonic API key
         // Make an API request to withdraw 'amount' from the user's wallet
         // Handle the API response
+
+        // await transfer(uniWallet, amount, user, ref);
     
         // Update the mobile wallet balance in your database
         wallet.balance -= amount;
@@ -123,10 +164,12 @@ async function transferFunds(req, res) {
           return res.status(400).json({ message: "Insufficient balance" });
         }
     
-        // Use Bionic API to initiate a funds transfer transaction
-        // Replace 'YOUR_API_KEY' with your actual Bionic API key
+        // Use Beyonic API to initiate a funds transfer transaction
+        // Replace 'YOUR_API_KEY' with your actual Beyonic API key
         // Make an API request to transfer 'amount' from sender to receiver
         // Handle the API response
+
+        // await transfer(sender, amount, receiver, ref);
     
         // Update the mobile wallet balances in your database
         senderWallet.balance -= amount;

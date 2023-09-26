@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const MobileWallet = require('../models/mobileWallet');
+const ElectrictyUnits = require('../models/electricityUnits');
 const userSchema = new mongoose.Schema(
     {
         // _id: mongoose.Schema.Types.ObjectId,
@@ -44,7 +46,11 @@ const userSchema = new mongoose.Schema(
             // required: true,
             default: 'user',
             select: false,
-        }
+        },
+        transactions: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Transaction'
+        }]
     },
     { timestamps: true } // to include createdAt and updatedAt
 );
@@ -71,6 +77,12 @@ userSchema.pre('save', function(next) {
     if (!this.isModified('password')) return next();
 
     this.password = crypto.createHash('sha256').update(this.password).digest('hex');
+    next();
+});
+
+userSchema.pre('remove', async function(next) {
+    await MobileWallet.deleteOne({ userId: this._id });
+    await ElectrictyUnits.deleteOne({ userId: this._id });
     next();
 });
 
